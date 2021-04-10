@@ -72,6 +72,21 @@ void Snake::Undo_Move()
 	Grow(1);
 }
 
+std::pair<int, int> Snake::Test_Move()
+{
+	switch (Direction)
+	{
+	case 0:
+		return std::make_pair(Body.front().x, Body.front().y - 1);
+	case 1:
+		return std::make_pair(Body.front().x + 1, Body.front().y);
+	case 2:
+		return std::make_pair(Body.front().x, Body.front().y + 1);
+	case 3:
+		return std::make_pair(Body.front().x - 1, Body.front().y);
+	}
+}
+
 void Snake::Set_Length(int length)
 {
 	for (int i = 0; i < length; i++)
@@ -90,25 +105,35 @@ void Snake::Change_Speed(int new_speed)
 
 
 
-bool Snake::Collided(Screen_Buffer screen)
+bool Snake::Test_Collision(Screen_Buffer screen, std::pair<int, int> test_pos)
 {
-	// Snake vs snake
-	for (std::deque<sSnakeSegment>::iterator it = Body.begin(); it != Body.end(); it++)
-		if (it != Body.begin() && it->x == Body.front().x && it->y == Body.front().y)
+	// Test against edges
+	// X axis
+	if (test_pos.first < 0 || test_pos.first >= screen.Get_Size().first)
+	{
+		return true;
+	}
+	else if (test_pos.second < 0 || test_pos.second >= screen.Get_Size().second)
+	{
+		return true;
+	}
+	else if (screen.Element_At(test_pos.first, test_pos.second) != L' ')
+	{
+		if (screen.Element_At(test_pos.first, test_pos.second) == L'@')
+		{
+			return false;
+		}
+		else
+		{
 			return true;
-
-	// Snake vs world
-	if (Body.front().x < 0 || Body.front().x >= screen.Get_Size().first)
-		return true;
-	if (Body.front().y < 3 || Body.front().y >= screen.Get_Size().second)
-		return true;
-
+		};
+	}
 	return false;
 }
 
-bool Snake::On_Food(Food food)
+bool Snake::Test_On_Food(Food food, std::pair<int, int> test_pos)
 {
-	return Body.front().x == food.Get_Coords().first && Body.front().y == food.Get_Coords().second;
+	return test_pos == food.Get_Coords();
 }
 
 

@@ -64,14 +64,42 @@ int main()
 			}
 
 			// Game Logic
-			// Update snake position
-			snake.Move();
+			// Test move
+ 			std::pair<int, int> snake_test_pos = snake.Test_Move();
 
 			// Collision
 			 
-			if (snake.Collided(screen))
+			if (snake.Test_Collision(screen, snake_test_pos))
 			{
-				if (snake.Shield_Status())
+				// Snake vs food
+				if (snake.Test_On_Food(food, snake_test_pos))
+				{
+					snake.Grow(food.Eaten());
+
+					switch (food.Get_Type())
+					{
+					case 2:
+						std::thread(&Snake::Super_Speed, snake_ptr).detach();
+						break;
+					case 3:
+						snake.Add_Shield();
+						break;
+					case 4:
+						std::thread(&Snake::Chonk, snake_ptr).detach();
+						break;
+					default:
+						break;
+					}
+
+					food.New_Food(screen);
+
+					// Update snake position
+					snake.Move();
+
+					// Update snake's tail
+					snake.Update_Tail();
+				}
+				else if (snake.Shield_Status())
 				{
 					snake.Remove_Shield();
 					snake.Undo_Move();
@@ -86,32 +114,21 @@ int main()
 					snake.Kill();
 				}
 			}
-
-				// Snake vs food
-			if (snake.On_Food(food))
+			else
 			{
-				snake.Grow(food.Eaten());
+				// Update snake position
+				snake.Move();
 
-				switch (food.Get_Type())
-				{
-				case 2:
-					std::thread (&Snake::Super_Speed, snake_ptr).detach();
-					break;
-				case 3:
-					snake.Add_Shield();
-				default:
-					break;
-				}
-
-				food.New_Food(screen);
+				// Update snake's tail
+				snake.Update_Tail();
 			}
-
-			// Update snake's tail
-			snake.Update_Tail();
 
 			// Display to player
 			// Clear screen
 			screen.Clear();
+
+			// Draw snake
+			snake.Draw(screen);
 
 			// Draw stats and border
 			for (int i = 0; i < screen.Get_Size().first; i++)
@@ -122,9 +139,6 @@ int main()
 
 			screen.Print(2, 1, L"S N A K E  G A M E ! !");
 			screen.Print(55, 1, L"SCORE: %d", snake.Get_Length() - 10);
-
-			// Draw snake
-			snake.Draw(screen);
 
 			// Draw food
 			food.Draw(screen);

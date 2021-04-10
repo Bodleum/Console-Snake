@@ -27,11 +27,12 @@ public:
 	void Kill();
 	void Move();
 	void Undo_Move();
+	std::pair<int, int> Test_Move();
 	void Set_Length(int);
 	void Change_Direction(int);
 	void Change_Speed(int);
-	bool Collided(Screen_Buffer);
-	bool On_Food(Food);
+	bool Test_Collision(Screen_Buffer, std::pair<int, int>);
+	bool Test_On_Food(Food, std::pair<int, int>);
 	void Grow(int);
 	void Shrink(int);
 	void Update_Tail();

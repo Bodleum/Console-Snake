@@ -99,7 +99,7 @@ void Food::New_Food(Screen_Buffer screen)
 	while (screen.Element_At(x, y) != L' ')
 		New_Position();
 
-	if ((rand() % 3) == 0)
+	if ((rand() % 2) == 0)
 	{
 		Current_Type = rand() % 6;
 	}
