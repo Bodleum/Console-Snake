@@ -13,6 +13,7 @@ class Snake
 	int Speed;
 	bool Dead;
 	bool Shield;
+	int Width;
 
 public:
 	Snake();
@@ -40,5 +41,6 @@ public:
 	void Super_Speed();
 	void Add_Shield();
 	void Remove_Shield();
+	void Chonk();
 
 };

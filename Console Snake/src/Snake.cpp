@@ -4,9 +4,10 @@ Snake::Snake()
 {
 	Direction = 3;
 	Speed = 2;
+	Width = 0;
 
 	Dead = false;
-	Shield = true;
+	Shield = false;
 }
 
 
@@ -130,12 +131,27 @@ void Snake::Update_Tail()
 
 void Snake::Draw(Screen_Buffer screen)
 {
-	// Draw snake body
-	for (auto s : Body) screen.Set_Element(s.x, s.y, Dead ? L'+' : L'O');
-	
-	// Draw snake head
-	screen.Set_Element(Body.front().x, Body.front().y, Dead ? L'X' : L'@');
-	if (Shield) screen.Set_Element(Body[1].x, Body[1].y, L'@');
+	for (int i = -1 * Width; i < Width + 1; i++)
+	{
+		if (Direction % 2 == 0)
+		{
+			// Draw snake body
+			for (auto s : Body) screen.Set_Element(s.x + i, s.y, Dead ? L'+' : L'O');
+
+			// Draw snake head
+			screen.Set_Element(Body.front().x + i, Body.front().y, Dead ? L'X' : L'@');
+			if (Shield) screen.Set_Element(Body[1].x + i, Body[1].y, L'@');
+		}
+		else if (Direction % 2 == 1)
+		{
+			// Draw snake body
+			for (auto s : Body) screen.Set_Element(s.x, s.y + i, Dead ? L'+' : L'O');
+
+			// Draw snake head
+			screen.Set_Element(Body.front().x, Body.front().y + i, Dead ? L'X' : L'@');
+			if (Shield) screen.Set_Element(Body[1].x, Body[1].y + i, L'@');
+		}
+	}
 }
 
 
@@ -156,4 +172,11 @@ void Snake::Add_Shield()
 void Snake::Remove_Shield()
 {
 	Shield = false;
+}
+
+void Snake::Chonk()
+{
+	Width++;
+	std::this_thread::sleep_for(std::chrono::seconds(10));
+	Width--;
 }
